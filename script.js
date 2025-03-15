@@ -25,7 +25,7 @@
                 stream: true,
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer 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`
+                    "Authorization": `Bearer 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`
                 },
                 body: JSON.stringify({
                     model: "deepseek/deepseek-r1-distill-llama-70b:free",
