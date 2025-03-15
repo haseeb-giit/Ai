@@ -17,21 +17,22 @@ async function sendMessage() {
     // Clear input field
     userInput.value = "";
 
-    // API call
+    // API call to AIML API
     try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const response = await fetch("https://api.aimlapi.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer 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`, // Updated API key
-                "HTTP-Referer": "https://your-website.com", // Optional, replace with your real website
-                "X-Title": "My Chatbot App" // Optional, replace with your app title
+                "Authorization": `Bearer 6384381c76d54a8784be0151bd794a7f` // Your AIML API key
             },
             body: JSON.stringify({
-                model: "meta-llama/llama-3.1-8b-instruct:free", // Corrected model
+                model: "mistralai/Mistral-7B-Instruct-v0.2", // Your correct model
                 messages: [
-                    { role: "user", content: message }
-                ]
+                    { role: "system", content: "You are a travel agent. Be descriptive and helpful." }, // System prompt
+                    { role: "user", content: message } // User message
+                ],
+                temperature: 0.7,
+                max_tokens: 256
             })
         });
 
@@ -45,7 +46,7 @@ async function sendMessage() {
 
     } catch (error) {
         console.error("Error:", error);
-        addMessage("❌ Error: Unable to connect to the API.", 'ai-response');
+        addMessage("❌ Error: Unable to connect to AIML API.", 'ai-response');
     }
 }
 
