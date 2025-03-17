@@ -218,6 +218,13 @@
         font-size: 12px; /* Smaller font for smaller screens */
         padding: 10px; /* Reduce padding */
     }
+                                .animated_text {
+                margin-left: 100px;
+            }
+
+            .font_size {
+                font-size: 30px;
+            }
                     .input-area {
                         width: 97%;
                         max-width: 700px;
@@ -246,6 +253,24 @@
                         cursor: pointer;
                     }
                 }
+
+                         .animated_text {
+            animation: fadeIn 2s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+                /* Slide in from above */
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                /* Arrive in place */
+            }
+        }
             </style>
             
 </head>
@@ -257,11 +282,20 @@
     </span>
     </a></header>    <div id="chat-window">
         <!-- Messages will appear here -->
+
+          <h1 style="justify-content: center;align-items: center;" class="animated_text hide">
+            <span class="gradent" style="font-size: 50px;">
+                <span class="font_size">
+                    Well Come
+                </span>
+            </span>
+        </h1>
+        
     </div>
 
     <div class="input-area">
         <input type="text" id="userInput" placeholder="Message Haseeb.giit">
-        <button onclick="sendMessage()">Send</button>
+        <button onclick="sendMessage()" class="hide_item">Send</button>
     </div>
 <script src="script.js">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -296,7 +330,12 @@ async function showAIResponse(text, className) {
 
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
-
+        document.querySelector(".hide_item").addEventListener("click", function () {
+            const animatedText = document.querySelector(".animated_text");
+            if (animatedText) {
+                animatedText.style.display = "none"; // Remove the element
+            }
+        });
     </script>
 </body>
 
