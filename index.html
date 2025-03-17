@@ -10,150 +10,164 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: rgb(0, 0, 33);
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    gap: 10px;
-}
-
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0); /* Fully transparent */
-    color: white;
-    padding: 15px 20px;
-    font-size: clamp(16px, 4vw, 24px); /* Responsive font size */
-    z-index: 1000;
-    margin-bottom: 15px; /* Add spacing below header */
-}
-
-#chat-window {
-    width: 100%;
-    max-width: 700px;
-    height: 70vh;
-    background: rgb(18, 18, 100);
-    border-radius: 15px;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    scroll-behavior: smooth;
-    margin-top: 80px; /* Provide spacing from the header */
-}
-
-.chat-bubble {
-    padding: 12px 16px;
-    border-radius: 20px;
-    max-width: 80%;
-    word-wrap: break-word;
-    line-height: 1.4;
-    font-size: 14px;
-    white-space: pre-wrap;
-}
-
-.user-message {
-    align-self: flex-end;
-    background: rgb(60, 60, 200);
-    color: white;
-}
-
-.ai-response {
-    align-self: flex-start;
-    background: rgb(40, 40, 120);
-    color: white;
-}
-
-.input-area {
-    width: 100%;
-    max-width: 700px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-    border-radius: 20px;
-}
-
-.input-area input[type="text"] {
-    flex: 1;
-    padding: 15px;
-    border-radius: 30px;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    background: rgb(30, 30, 80);
-    color: white;
-}
-
-.input-area button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 30px;
-    background: rgb(90, 90, 250);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* Scrollbar */
-#chat-window::-webkit-scrollbar {
-    width: 6px;
-}
-
-#chat-window::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-}
-@media screen and (max-width: 768px) {
-    #chat-window {
-        width: 90%;
-        height: 60vh;
-        margin-top: 100px; /* Adjust to create space for header */
-        padding: 10px;
-        border-radius: 10px;
-    }
-
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: rgb(0, 0, 33);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .gradent{
+            background: linear-gradient(to right, rgb(75, 75, 253), rgb(198, 12, 198),rgb(255, 43, 78)); /* Gradient colors */
+    -webkit-background-clip: text; /* Apply gradient only to text */
+    -webkit-text-fill-color: transparent; /* Make the text transparent to reveal the gradient */
+    font-size: 24px; /* Optional: adjust font size */
+    font-weight: bold; /* Optional: for emphasis */
+        }
+        
+        header {
+            
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0); /* Fully transparent */
+            color: white;
+            padding: 15px 20px;
+            font-size: clamp(16px, 4vw, 24px); /* Responsive font size */
+            z-index: 1000;
+            margin-bottom: 15px; /* Add spacing below header */
+            border-bottom: 5px solid rgb(255, 255, 255);
+        }
+        
+        #chat-window {
+            width: 100%;
+            max-width: 700px;
+            height: 70vh;
+            /* background: rgb(18, 18, 100); */
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scroll-behavior: smooth;
+            margin-top: 0px; /* Provide spacing from the header */
+        }
+        
+        .chat-bubble {
+            padding: 12px 16px;
+            border-radius: 20px;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: rgb(60, 60, 200);
+            color: white;
+        }
+        
+        .ai-response {
+            align-self: flex-start;
+            background: rgb(40, 40, 120);
+            color: white;
+        }
+        
+        .input-area {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            border-radius: 20px;
+            background-color: #0d0237;
+        }
+        
+        .input-area input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: rgb(30, 30, 80);
+            color: white;
+        }
+        
+        .input-area button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            background: rgb(90, 90, 250);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Scrollbar */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-window::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        @media screen and (max-width: 768px) {
     .input-area {
-        width: 90%;
-        flex-direction: column; /* Stack input and button for smaller screens */
-        gap: 8px;
+        width: 97%;
+        max-width: 700px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 20px;
+        padding: 10px;
+        margin-top: 20px; /* Adjust to avoid overlap */
+        background-color: #0d0237;
     }
 
     .input-area input[type="text"] {
-        width: 100%;
-        font-size: 12px;
-        padding: 10px;
+        flex: 1; /* Input box will stay aligned */
+        padding: 15px;
+        border-radius: 30px;
+        font-size: 14px;
     }
 
     .input-area button {
-        width: 100%;
+        padding: 12px 20px;
+        border-radius: 30px;
         font-size: 14px;
-        padding: 10px;
+        background: rgb(90, 90, 250);
+        color: white;
+        cursor: pointer;
     }
 }
 
-
-    </style>
+        
+            </style>
 </head>
 
 <body>
-        <header><a href="https://haseeb-giit.github.io/potfolio/" target="_blank" style="color: white;text-decoration: none;">haseeb.giit</a></header>
-
-    <div id="chat-window">
+       <header><a href="https://haseeb-giit.github.io/potfolio/" target="_blank" style="color: white;text-decoration: none;">
+        <span class="gradent">
+        haseeb.giit
+    </span>
+    </a></header>    <div id="chat-window">
         <!-- Messages will appear here -->
     </div>
 
