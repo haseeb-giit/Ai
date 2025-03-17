@@ -145,20 +145,45 @@
 
 .user-message {
     align-self: flex-end;
-    background: #007bff;
+    background: transparent;
     color: white;
 }
 
 .ai-response {
     align-self: flex-start;
-    background: #444;
     color: white;
+}
+
+        header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0); /* Fully transparent */
+      color: white;
+      padding: 15px 20px;
+      font-size: clamp(16px, 4vw, 24px); /* Responsive font size */
+      z-index: 1000;
+    }
+@media screen and (max-width: 768px) {
+    .input-area {
+        width: 97%;
+        max-width: 700px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 20px;
+        padding: 10px;
+        margin-top: 200px;
+        background-color: #673AB7;
+    }
 }
 
     </style>
 </head>
 
 <body>
+        <header><a href="https://haseeb-giit.github.io/potfolio/" target="_blank" style="color: white;text-decoration: none;">haseeb.giit</a></header>
 
     <div id="chat-window">
         <!-- Messages will appear here -->
