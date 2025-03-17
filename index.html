@@ -12,6 +12,14 @@
 <meta name="keywords" content="Haseeb AI, Chatbot, AI Chat, Real-time AI, Smart Conversations, AI Integration">
 <meta name="author" content="Haseeb">
 <meta name="robots" content="index, follow">
+
+<!--     Intergration of highlight library  -->
+
+    <!-- Highlight.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
+<!-- Highlight.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -254,134 +262,40 @@
         <button onclick="sendMessage()">Send</button>
     </div>
 <script src="script.js">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 </script>
-    <!-- <script>
-        const chatWindow = document.getElementById("chat-window");
-        const userInput = document.getElementById("userInput");
-    
-        // Send message on Enter key
-        userInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") sendMessage();
-        });
-    
-        // Send Message Function
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-    
-            // Show user message
-            addMessage(message, 'user-message');
-    
-            // Clear input field
-            userInput.value = "";
-    
-            // API call
-            try {
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer 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`
-                    },
-                    body: JSON.stringify({
-                        model: "deepseek/deepseek-r1-distill-llama-70b:free",
-                        messages: [
-                            { role: "user", content: message }
-                        ]
-                    })
-                });
-    
-                if (!response.ok) throw new Error(`Error: ${response.status}`);
-    
-                const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
-    
-                // Show AI response with typing + code block
-                await typeMessage(aiResponse, 'ai-response');
-    
-            } catch (error) {
-                console.error("Error:", error);
-                addMessage("Error: Unable to connect to the API.", 'ai-response');
-            }
+    <script>
+        // Function to highlight code blocks
+async function showAIResponse(text, className) {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `chat-bubble ${className}`;
+    chatWindow.appendChild(messageDiv);
+
+    const parts = splitMessage(text);
+
+    for (const part of parts) {
+        if (part.type === "code") {
+            // Highlight code block
+            const codeBlock = document.createElement("pre");
+            codeBlock.className = "code-block";
+            const codeElement = document.createElement("code");
+            codeElement.textContent = part.content.trim();
+            codeBlock.appendChild(codeElement);
+
+            // Apply syntax highlighting
+            hljs.highlightElement(codeElement);
+
+            messageDiv.appendChild(codeBlock);
+        } else {
+            // Typing effect for normal text
+            await typeText(part.content, messageDiv);
         }
-    
-        // Function to add simple user message (without typing effect)
-        function addMessage(text, className) {
-            const messageDiv = document.createElement("div");
-            messageDiv.className = `chat-bubble ${className}`;
-            messageDiv.innerHTML = formatCode(text); // Format if contains code
-            chatWindow.appendChild(messageDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-    
-        // Function for AI message with typing effect and formatted code
-        async function typeMessage(text, className) {
-            const messageDiv = document.createElement("div");
-            messageDiv.className = `chat-bubble ${className}`;
-            chatWindow.appendChild(messageDiv);
-    
-            const parts = splitMessage(text);
-    
-            for (const part of parts) {
-                if (part.type === "code") {
-                    // Code block
-                    const codeBlock = document.createElement("pre");
-                    codeBlock.className = "code-block";
-                    const codeElement = document.createElement("code");
-                    codeElement.textContent = part.content.trim();
-                    codeBlock.appendChild(codeElement);
-                    messageDiv.appendChild(codeBlock);
-                } else {
-                    // Typing normal text
-                    await typeText(part.content, messageDiv);
-                }
-            }
-    
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-    
-        // Typing text character by character
-        async function typeText(text, container) {
-            const span = document.createElement("span");
-            container.appendChild(span);
-    
-            for (let i = 0; i < text.length; i++) {
-                span.innerHTML += text[i];
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-                await new Promise(resolve => setTimeout(resolve, 20)); // Typing speed
-            }
-        }
-    
-        // Split message into normal and code parts
-        function splitMessage(text) {
-            const regex = /```([\s\S]*?)```/g;
-            let result, lastIndex = 0;
-            const parts = [];
-    
-            while ((result = regex.exec(text)) !== null) {
-                if (result.index > lastIndex) {
-                    parts.push({ type: "text", content: text.substring(lastIndex, result.index) });
-                }
-                parts.push({ type: "code", content: result[1] });
-                lastIndex = regex.lastIndex;
-            }
-    
-            if (lastIndex < text.length) {
-                parts.push({ type: "text", content: text.substring(lastIndex) });
-            }
-    
-            return parts;
-        }
-    
-        // Function to format code blocks in existing simple messages
-        function formatCode(text) {
-            return text.replace(/```([\s\S]*?)```/g, (match, code) => {
-                return `<pre class="code-block"><code>${code.trim()}</code></pre>`;
-            }).replace(/\n/g, '<br>'); // Line breaks for normal text
-        }
+    }
+
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
     </script>
-     -->
 </body>
 
 </html>
