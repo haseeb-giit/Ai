@@ -92,7 +92,69 @@
                     background: rgb(40, 40, 120);
                     color: white;
                 }
-            
+            /* Code Block Styles */
+.code-block {
+    background-color: #1e1e1e; /* VS Code's dark theme background */
+    color: #d4d4d4; /* Default text color */
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Highlighting Syntax Colors */
+.code-block .keyword {
+    color: #569cd6; /* Keywords (e.g., const, let, async) */
+    font-weight: bold;
+}
+
+.code-block .string {
+    color: #ce9178; /* Strings (e.g., "Hello World") */
+}
+
+.code-block .number {
+    color: #b5cea8; /* Numbers (e.g., 123) */
+}
+
+.code-block .function {
+    color: #dcdcaa; /* Function names */
+}
+
+.code-block .comment {
+    color: #6a9955; /* Comments (e.g., // This is a comment) */
+    font-style: italic;
+}
+
+.code-block .operator {
+    color: #c586c0; /* Operators (e.g., +, -, =, ===) */
+}
+
+.code-block .variable {
+    color: #9cdcfe; /* Variables and parameter names */
+}
+
+.code-block .punctuation {
+    color: #d4d4d4; /* Brackets, commas, etc. */
+}
+
+/* Optional Scrollbar Styling */
+.code-block::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
                 .input-area {
     width: 100%;
     max-width: 700px;
