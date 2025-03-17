@@ -46,7 +46,7 @@ async function sendMessage() {
 
     } catch (error) {
         console.error("Error:", error);
-        addMessage("❌ Error: Unable to connect to AIML API.", 'ai-response');
+        addMessage("❌ Error: Unable to connect to Haseeb.giit/public api API.", 'ai-response');
     }
 }
 
