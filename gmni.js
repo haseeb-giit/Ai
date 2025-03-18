@@ -43,104 +43,67 @@ async function sendMessage() {
 
     } catch (error) {
         console.error("Error:", error);
-        addMessage("❌ Error: Unable to connect to the API.", 'ai-response');
+        addMessage("❌ Error: Unable to connect to HSYB API.", 'ai-response');
     }
 }
 
-// Function to add user/AI message with support for formatted HTML and sanitization
+// Function to add simple user message (without typing effect)
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
-    const sanitizedText = DOMPurify.sanitize(text); // Sanitize for safety
-    messageDiv.innerHTML = sanitizedText; // Render sanitized HTML
+    messageDiv.innerHTML = formatResponse(text);
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to show AI response with code blocks and HTML tables
+// Function to show AI response
 async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
     chatWindow.appendChild(messageDiv);
-
-    const parts = splitMessage(text);
-
-    for (const part of parts) {
-        if (part.type === "code") {
-            const codeBlock = document.createElement("pre");
-            codeBlock.className = "code-block";
-            const codeElement = document.createElement("code");
-            codeElement.textContent = part.content.trim();
-            codeBlock.appendChild(codeElement);
-            messageDiv.appendChild(codeBlock);
-        } else {
-            const sanitizedContent = DOMPurify.sanitize(part.content); // Sanitize HTML content
-            messageDiv.innerHTML += sanitizedContent;
-        }
-    }
-
+    messageDiv.innerHTML = formatResponse(text);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Typing effect for text display
-async function typeText(text, container) {
-    const span = document.createElement("span");
-    container.appendChild(span);
+// Function to format AI response like ChatGPT
+function formatResponse(text) {
+    text = text.replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;");
 
-    for (let i = 0; i < text.length; i++) {
-        span.innerHTML += text[i];
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 5));
-    }
+    // Headings
+    text = text.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+    text = text.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+    text = text.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+
+    // Bold, Italic, Underline
+    text = text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+    text = text.replace(/\*(.+?)\*/g, "<i>$1</i>");
+    text = text.replace(/__(.+?)__/g, "<u>$1</u>");
+
+    // Blockquote
+    text = text.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
+
+    // Unordered List
+    text = text.replace(/^- (.+)$/gm, "<ul><li>$1</li></ul>");
+    text = text.replace(/(<ul><li>.+<\/li><\/ul>)+/g, match => `<ul>${match.replace(/<\/ul><ul>/g, '')}</ul>`);
+
+    // Ordered List
+    text = text.replace(/^\d+\.\s(.+)$/gm, "<ol><li>$1</li></ol>");
+    text = text.replace(/(<ol><li>.+<\/li><\/ol>)+/g, match => `<ol>${match.replace(/<\/ol><ol>/g, '')}</ol>`);
+
+    // Code Blocks
+    text = text.replace(/```([\s\S]*?)```/g, `<pre class="code-block"><code>$1</code></pre>`);
+
+    // Inline Code
+    text = text.replace(/`(.+?)`/g, `<code class="inline-code">$1</code>`);
+
+    // Tables
+    text = text.replace(/\|(.+)\|\n(\|[-:]+\|\n)?([\s\S]*?)\n/g, function (match, header, divider, rows) {
+        let headers = header.split('|').map(h => `<th>${h.trim()}</th>`).join('');
+        let bodyRows = rows.split('\n').map(row => `<tr>${row.split('|').map(cell => `<td>${cell.trim()}</td>`).join('')}</tr>`).join('');
+        return `<table class="custom-table"><thead><tr>${headers}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+    });
+
+    return text.replace(/\n/g, '<br>');
 }
-
-// Split message into text, table, and code parts
-function splitMessage(text) {
-    const regex = /```([\s\S]*?)```/g;
-    let result, lastIndex = 0;
-    const parts = [];
-
-    while ((result = regex.exec(text)) !== null) {
-        if (result.index > lastIndex) {
-            parts.push({ type: "text", content: text.substring(lastIndex, result.index) });
-        }
-        parts.push({ type: "code", content: result[1] }); // Code block
-        lastIndex = regex.lastIndex;
-    }
-
-    if (lastIndex < text.length) {
-        parts.push({ type: "text", content: text.substring(lastIndex) });
-    }
-
-    return parts;
-}
-
-// CSS Styling for better readability
-const style = document.createElement("style");
-// style.innerHTML = `
-// .chat-bubble {
-//     margin: 5px;
-//     padding: 10px;
-//     border-radius: 10px;
-//     max-width: 80%;
-//     word-wrap: break-word;
-// }
-// .user-message {
-//     background-color: #d1e7dd;
-//     align-self: flex-end;
-// }
-// .ai-response {
-//     background-color: #f8d7da;
-//     align-self: flex-start;
-// }
-// .code-block {
-//     background-color: #f4f4f4;
-//     border: 1px solid #ddd;
-//     border-radius: 4px;
-//     padding: 10px;
-//     font-family: monospace;
-//     overflow-x: auto;
-//     white-space: pre-wrap;
-// }
-// `;
-// document.head.appendChild(style);
