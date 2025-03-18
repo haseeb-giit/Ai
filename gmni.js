@@ -38,12 +38,12 @@ async function sendMessage() {
         const data = await response.json();
         const aiResponse = data.candidates[0].content.parts[0].text;
 
-        // Show AI response properly
+        // Show AI response properly with formatting
         await showAIResponse(aiResponse, 'ai-response');
 
     } catch (error) {
         console.error("Error:", error);
-        addMessage("❌ Error: Unable to connect to HSYB API.", 'ai-response');
+        addMessage("❌ Error: Unable to connect to AI API.", 'ai-response');
     }
 }
 
@@ -51,12 +51,12 @@ async function sendMessage() {
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
-    messageDiv.innerHTML = formatCode(text);
+    messageDiv.innerHTML = formatText(text);
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to show AI response
+// Function to show AI response with formatting + typing effect
 async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
@@ -80,7 +80,7 @@ async function showAIResponse(text, className) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Typing text faster
+// Typing text effect
 async function typeText(text, container) {
     const span = document.createElement("span");
     container.appendChild(span);
@@ -113,9 +113,59 @@ function splitMessage(text) {
     return parts;
 }
 
- 
-function formatCode(text) {
-    return text.replace(/```([\s\S]*?)```/g, (match, code) => {
-        return `<pre class="code-block"><code>${code.trim()}</code></pre>`;
-    }).replace(/\n/g, '<br>');
+// Function to format text with all elements
+function formatText(text) {
+    // Headings (### Heading 3, ## Heading 2, # Heading 1)
+    text = text.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+    text = text.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+    text = text.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+
+    // Bold (**Bold Text**)
+    text = text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+
+    // Italic (*Italic Text*)
+    text = text.replace(/\*(.+?)\*/g, "<i>$1</i>");
+
+    // Underline (__Underline Text__)
+    text = text.replace(/__(.+?)__/g, "<u>$1</u>");
+
+    // Blockquote ( > Quote )
+    text = text.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
+
+    // Unordered List (- Item)
+    text = text.replace(/^- (.+)$/gm, "<li>$1</li>");
+    text = text.replace(/(<li>.+<\/li>)/g, "<ul>$1</ul>");
+
+    // Ordered List (1. Item)
+    text = text.replace(/^\d+\.\s(.+)$/gm, "<li>$1</li>");
+    text = text.replace(/(<li>.+<\/li>)/g, "<ol>$1</ol>");
+
+    // Code Blocks (```Code```)
+    text = text.replace(/```([\s\S]*?)```/g, `<pre class="code-block"><code>$1</code></pre>`);
+
+    // Inline Code (`inline code`)
+    text = text.replace(/`(.+?)`/g, `<code class="inline-code">$1</code>`);
+
+    // Convert table format
+    text = text.replace(/Table:\n([\s\S]*?)\n\n/g, function (match, tableContent) {
+        return createTable(tableContent);
+    });
+
+    return text.replace(/\n/g, '<br>'); // Line breaks
+}
+
+// Function to create table with purple styling
+function createTable(tableText) {
+    let rows = tableText.trim().split("\n");
+    let table = `<table class="custom-table">`;
+
+    rows.forEach((row, index) => {
+        let cells = row.split("|").map(cell => cell.trim());
+        table += index === 0 ? "<tr><th>" : "<tr><td>";
+        table += cells.join(index === 0 ? "</th><th>" : "</td><td>");
+        table += index === 0 ? "</th></tr>" : "</td></tr>";
+    });
+
+    table += "</table>";
+    return table;
 }
