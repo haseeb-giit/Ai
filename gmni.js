@@ -19,7 +19,7 @@ async function sendMessage() {
 
     // API call to Google Gemini AI
     try {
-        const apiKey = "AIzaSyB2z-9qQW-ri59oMELf_bNrMcMRldadO84";
+        const apiKey = "AIzaSyC-ZV_QjpyhIpNrZVsZ_iseDl42v2UhTSg";
         const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey, {
             method: "POST",
             headers: {
