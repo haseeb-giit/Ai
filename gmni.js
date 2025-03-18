@@ -24,20 +24,21 @@ async function sendMessage() {
     userInput.value = "";
 
     try {
-        const apiKey = "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"; // OpenRouter API key
-        const url = "https://openrouter.ai/api/v1/chat/completions"; // Base URL for OpenRouter API
+        // Replace this with your actual OpenRouter API key
+        const apiKey = "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";
+        const url = "https://openrouter.ai/api/v1/chat/completions"; // OpenRouter API endpoint
 
-        // Fetch API call
+        // API request to OpenRouter
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}` // Properly set Authorization header
+                "Authorization": `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gpt-4", // Specify the AI model (example: GPT-4)
-                messages: [{ role: "user", content: message }],
-                stream: true // Enable streaming if required
+                model: "gpt-4", // Specify the model
+                messages: [{ role: "user", content: message }], // User message payload
+                stream: false // Set to false for non-streaming response
             }),
         });
 
@@ -56,7 +57,7 @@ async function sendMessage() {
     }
 }
 
-// Add simple user message
+// Add a user message to the chat window
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
@@ -65,7 +66,7 @@ function addMessage(text, className) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to show AI response
+// Show AI response in the chat window
 function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
