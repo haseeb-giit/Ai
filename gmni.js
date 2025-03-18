@@ -17,55 +17,59 @@ async function sendMessage() {
     // Clear input field
     userInput.value = "";
 
-    // API call to Google Gemini AI
+    // API call to AIML API
     try {
-        const apiKey = "AIzaSyB2z-9qQW-ri59oMELf_bNrMcMRldadO84";
-        const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}, {
+        const response = await fetch("https://api.aimlapi.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer 6384381c76d54a8784be0151bd794a7f` // Your AIML API key
             },
             body: JSON.stringify({
-                contents: [{
-                    role: "user",
-                    parts: [{ text: message }]
-                }]
+                model: "mistralai/Mistral-7B-Instruct-v0.2", // Your correct model
+                messages: [
+                    { role: "system", content: "You are a coding assistant. Provide programming help, debug code, and explain concepts clearly. Be concise but helpful." }, // System prompt
+                    { role: "user", content: message } // User message
+                ],
+                temperature: 0.7,
+                max_tokens: 256
             })
         });
 
-        if (!response.ok) throw new Error(Error: ${response.status});
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
 
         const data = await response.json();
-        const aiResponse = data.candidates[0].content.parts[0].text;
+        const aiResponse = data.choices[0].message.content;
 
         // Show AI response properly
         await showAIResponse(aiResponse, 'ai-response');
+
     } catch (error) {
         console.error("Error:", error);
-        addMessage("❌ Error: Unable to connect to the API.", 'ai-response');
+        addMessage("❌ Error: Unable to connect to Haseeb.giit/public api API.", 'ai-response');
     }
 }
 
-// Function to add user/AI message with support for formatted HTML and sanitization
+// Function to add simple user message (without typing effect)
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = chat-bubble ${className};
-    const sanitizedText = DOMPurify.sanitize(text); // Sanitize for safety
-    messageDiv.innerHTML = sanitizedText; // Render sanitized HTML
+    messageDiv.className = `chat-bubble ${className}`;
+    messageDiv.innerHTML = formatCode(text); // Format if contains code
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to show AI response with code blocks and HTML tables
+// Function to show AI response
 async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = chat-bubble ${className};
+    messageDiv.className = `chat-bubble ${className}`;
     chatWindow.appendChild(messageDiv);
 
     const parts = splitMessage(text);
 
     for (const part of parts) {
         if (part.type === "code") {
+            // Code block added instantly
             const codeBlock = document.createElement("pre");
             codeBlock.className = "code-block";
             const codeElement = document.createElement("code");
@@ -73,15 +77,15 @@ async function showAIResponse(text, className) {
             codeBlock.appendChild(codeElement);
             messageDiv.appendChild(codeBlock);
         } else {
-            const sanitizedContent = DOMPurify.sanitize(part.content); // Sanitize HTML content
-            messageDiv.innerHTML += sanitizedContent;
+            // Typing only for text
+            await typeText(part.content, messageDiv);
         }
     }
 
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Typing effect for text display
+// Typing text faster
 async function typeText(text, container) {
     const span = document.createElement("span");
     container.appendChild(span);
@@ -89,13 +93,13 @@ async function typeText(text, container) {
     for (let i = 0; i < text.length; i++) {
         span.innerHTML += text[i];
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 5)); // Fast typing effect
+        await new Promise(resolve => setTimeout(resolve, 5)); // Fast typing speed (5ms)
     }
 }
 
-// Split message into text, table, and code parts
+// Split message into normal and code parts
 function splitMessage(text) {
-    const regex = /([\s\S]*?)/g;
+    const regex = /```([\s\S]*?)```/g;
     let result, lastIndex = 0;
     const parts = [];
 
@@ -103,7 +107,7 @@ function splitMessage(text) {
         if (result.index > lastIndex) {
             parts.push({ type: "text", content: text.substring(lastIndex, result.index) });
         }
-        parts.push({ type: "code", content: result[1] }); // Code block
+        parts.push({ type: "code", content: result[1] });
         lastIndex = regex.lastIndex;
     }
 
@@ -114,32 +118,9 @@ function splitMessage(text) {
     return parts;
 }
 
-// Optional CSS Styling for better readability
-const style = document.createElement("style");
-style.innerHTML = `
-.chat-bubble {
-    margin: 5px;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 80%;
-    word-wrap: break-word;
+// Format code blocks in simple messages (optional)
+function formatCode(text) {
+    return text.replace(/```([\s\S]*?)```/g, (match, code) => {
+        return `<pre class="code-block"><code>${code.trim()}</code></pre>`;
+    }).replace(/\n/g, '<br>'); // Line breaks for normal text
 }
-.user-message {
-    background-color: #d1e7dd;
-    align-self: flex-end;
-}
-.ai-response {
-    background-color: #f8d7da;
-    align-self: flex-start;
-}
-.code-block {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    font-family: monospace;
-    overflow-x: auto;
-    white-space: pre-wrap;
-}
-`;
-document.head.appendChild(style);
