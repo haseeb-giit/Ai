@@ -48,13 +48,22 @@ async function sendMessage() {
 }
 
 // Function to add simple user message (without typing effect)
+// Function to add user or AI message
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
-    messageDiv.innerHTML = formatText(text);
+
+    // Inject AI response as raw HTML (For Tables)
+    if (className === "ai-response") {
+        messageDiv.innerHTML = text;  // Directly inject HTML response
+    } else {
+        messageDiv.innerText = text;  // For user messages, use innerText
+    }
+
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
+
 
 // Function to show AI response with formatting + typing effect
 async function showAIResponse(text, className) {
