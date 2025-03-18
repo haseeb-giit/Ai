@@ -113,10 +113,9 @@ function splitMessage(text) {
     return parts;
 }
 
-// Function to format text with all elements
-// Function to format text with all elements
+// Function to format text with HTML elements, including tables
 function formatText(text) {
-    // Handle Tables FIRST to avoid breaking markdown structure
+    // Handle Tables FIRST before other replacements
     text = text.replace(/\n\|(.+?)\|\n/g, function (match) {
         return createTable(match);
     });
@@ -155,19 +154,20 @@ function formatText(text) {
     return text.replace(/\n/g, '<br>'); // Line breaks
 }
 
-// Function to create a proper table
+// Function to convert Markdown Table into HTML Table
 function createTable(tableText) {
     let rows = tableText.trim().split("\n");
-    let table = `<table class="custom-table">`;
+    let tableHTML = `<table class="custom-table" border="1" cellspacing="0" cellpadding="5">`;
 
     rows.forEach((row, index) => {
         let cells = row.split("|").map(cell => cell.trim()).filter(cell => cell !== "");
-        table += index === 0 ? "<tr><th>" : "<tr><td>";
-        table += cells.join(index === 0 ? "</th><th>" : "</td><td>");
-        table += index === 0 ? "</th></tr>" : "</td></tr>";
+        if (index === 1 && cells.every(cell => /^-+$/.test(cell))) return; // Skip separator row
+
+        tableHTML += index === 0 ? "<tr><th>" : "<tr><td>";
+        tableHTML += cells.join(index === 0 ? "</th><th>" : "</td><td>");
+        tableHTML += index === 0 ? "</th></tr>" : "</td></tr>";
     });
 
-    table += "</table>";
-    return table;
+    tableHTML += "</table>";
+    return tableHTML;
 }
-
