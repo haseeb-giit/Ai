@@ -23,9 +23,9 @@ async function sendMessage() {
     userInput.value = "";
 
     try {
-        const apiKey = "AIzaSyC-ZV_QjpyhIpNrZVsZ_iseDl42v2UhTSg";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
-        
+        const apiKey = "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";
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions" + apiKey, {
+         
         const response = await fetch(url, {
             method: "POST",
             headers: {
