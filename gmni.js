@@ -51,7 +51,7 @@ async function sendMessage() {
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
-    messageDiv.innerHTML = formatResponse(text);
+    messageDiv.innerHTML = formatCode(text);
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
@@ -61,49 +61,61 @@ async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-bubble ${className}`;
     chatWindow.appendChild(messageDiv);
-    messageDiv.innerHTML = formatResponse(text);
+
+    const parts = splitMessage(text);
+
+    for (const part of parts) {
+        if (part.type === "code") {
+            const codeBlock = document.createElement("pre");
+            codeBlock.className = "code-block";
+            const codeElement = document.createElement("code");
+            codeElement.textContent = part.content.trim();
+            codeBlock.appendChild(codeElement);
+            messageDiv.appendChild(codeBlock);
+        } else {
+            await typeText(part.content, messageDiv);
+        }
+    }
+
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to format AI response like ChatGPT
-function formatResponse(text) {
-    text = text.replace(/&/g, "&amp;")
-               .replace(/</g, "&lt;")
-               .replace(/>/g, "&gt;");
+// Typing text faster
+async function typeText(text, container) {
+    const span = document.createElement("span");
+    container.appendChild(span);
 
-    // Headings
-    text = text.replace(/^### (.+)$/gm, "<h3>$1</h3>");
-    text = text.replace(/^## (.+)$/gm, "<h2>$1</h2>");
-    text = text.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+    for (let i = 0; i < text.length; i++) {
+        span.innerHTML += text[i];
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        await new Promise(resolve => setTimeout(resolve, 5));
+    }
+}
 
-    // Bold, Italic, Underline
-    text = text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
-    text = text.replace(/\*(.+?)\*/g, "<i>$1</i>");
-    text = text.replace(/__(.+?)__/g, "<u>$1</u>");
+// Split message into normal and code parts
+function splitMessage(text) {
+    const regex = /```([\s\S]*?)```/g;
+    let result, lastIndex = 0;
+    const parts = [];
 
-    // Blockquote
-    text = text.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
+    while ((result = regex.exec(text)) !== null) {
+        if (result.index > lastIndex) {
+            parts.push({ type: "text", content: text.substring(lastIndex, result.index) });
+        }
+        parts.push({ type: "code", content: result[1] });
+        lastIndex = regex.lastIndex;
+    }
 
-    // Unordered List
-    text = text.replace(/^- (.+)$/gm, "<ul><li>$1</li></ul>");
-    text = text.replace(/(<ul><li>.+<\/li><\/ul>)+/g, match => `<ul>${match.replace(/<\/ul><ul>/g, '')}</ul>`);
+    if (lastIndex < text.length) {
+        parts.push({ type: "text", content: text.substring(lastIndex) });
+    }
 
-    // Ordered List
-    text = text.replace(/^\d+\.\s(.+)$/gm, "<ol><li>$1</li></ol>");
-    text = text.replace(/(<ol><li>.+<\/li><\/ol>)+/g, match => `<ol>${match.replace(/<\/ol><ol>/g, '')}</ol>`);
+    return parts;
+}
 
-    // Code Blocks
-    text = text.replace(/```([\s\S]*?)```/g, `<pre class="code-block"><code>$1</code></pre>`);
-
-    // Inline Code
-    text = text.replace(/`(.+?)`/g, `<code class="inline-code">$1</code>`);
-
-    // Tables
-    text = text.replace(/\|(.+)\|\n(\|[-:]+\|\n)?([\s\S]*?)\n/g, function (match, header, divider, rows) {
-        let headers = header.split('|').map(h => `<th>${h.trim()}</th>`).join('');
-        let bodyRows = rows.split('\n').map(row => `<tr>${row.split('|').map(cell => `<td>${cell.trim()}</td>`).join('')}</tr>`).join('');
-        return `<table class="custom-table"><thead><tr>${headers}</tr></thead><tbody>${bodyRows}</tbody></table>`;
-    });
-
-    return text.replace(/\n/g, '<br>');
+ 
+function formatCode(text) {
+    return text.replace(/```([\s\S]*?)```/g, (match, code) => {
+        return `<pre class="code-block"><code>${code.trim()}</code></pre>`;
+    }).replace(/\n/g, '<br>');
 }
