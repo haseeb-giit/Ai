@@ -1,4 +1,4 @@
-onst chatWindow = document.getElementById("chat-window");
+const chatWindow = document.getElementById("chat-window");
 const userInput = document.getElementById("userInput");
 
 // Send message on Enter key
