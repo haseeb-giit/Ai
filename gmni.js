@@ -20,7 +20,7 @@ async function sendMessage() {
     // API call to Google Gemini AI
     try {
         const apiKey = "AIzaSyB2z-9qQW-ri59oMELf_bNrMcMRldadO84";
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey, {
+        const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -33,14 +33,13 @@ async function sendMessage() {
             })
         });
 
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        if (!response.ok) throw new Error(Error: ${response.status});
 
         const data = await response.json();
         const aiResponse = data.candidates[0].content.parts[0].text;
 
         // Show AI response properly
         await showAIResponse(aiResponse, 'ai-response');
-
     } catch (error) {
         console.error("Error:", error);
         addMessage("❌ Error: Unable to connect to the API.", 'ai-response');
@@ -50,7 +49,7 @@ async function sendMessage() {
 // Function to add user/AI message with support for formatted HTML and sanitization
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = `chat-bubble ${className}`;
+    messageDiv.className = chat-bubble ${className};
     const sanitizedText = DOMPurify.sanitize(text); // Sanitize for safety
     messageDiv.innerHTML = sanitizedText; // Render sanitized HTML
     chatWindow.appendChild(messageDiv);
@@ -60,7 +59,7 @@ function addMessage(text, className) {
 // Function to show AI response with code blocks and HTML tables
 async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = `chat-bubble ${className}`;
+    messageDiv.className = chat-bubble ${className};
     chatWindow.appendChild(messageDiv);
 
     const parts = splitMessage(text);
@@ -90,13 +89,13 @@ async function typeText(text, container) {
     for (let i = 0; i < text.length; i++) {
         span.innerHTML += text[i];
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 5));
+        await new Promise(resolve => setTimeout(resolve, 5)); // Fast typing effect
     }
 }
 
 // Split message into text, table, and code parts
 function splitMessage(text) {
-    const regex = /```([\s\S]*?)```/g;
+    const regex = /([\s\S]*?)/g;
     let result, lastIndex = 0;
     const parts = [];
 
@@ -115,32 +114,32 @@ function splitMessage(text) {
     return parts;
 }
 
-// CSS Styling for better readability
+// Optional CSS Styling for better readability
 const style = document.createElement("style");
-// style.innerHTML = `
-// .chat-bubble {
-//     margin: 5px;
-//     padding: 10px;
-//     border-radius: 10px;
-//     max-width: 80%;
-//     word-wrap: break-word;
-// }
-// .user-message {
-//     background-color: #d1e7dd;
-//     align-self: flex-end;
-// }
-// .ai-response {
-//     background-color: #f8d7da;
-//     align-self: flex-start;
-// }
-// .code-block {
-//     background-color: #f4f4f4;
-//     border: 1px solid #ddd;
-//     border-radius: 4px;
-//     padding: 10px;
-//     font-family: monospace;
-//     overflow-x: auto;
-//     white-space: pre-wrap;
-// }
-// `;
-// document.head.appendChild(style);
+style.innerHTML = `
+.chat-bubble {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+.user-message {
+    background-color: #d1e7dd;
+    align-self: flex-end;
+}
+.ai-response {
+    background-color: #f8d7da;
+    align-self: flex-start;
+}
+.code-block {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: monospace;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+`;
+document.head.appendChild(style);
