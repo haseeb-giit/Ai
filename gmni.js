@@ -46,42 +46,33 @@ async function sendMessage() {
     }
 }
 
-// Function to add user/AI message with support for formatted HTML and sanitization
+// Function to add user/AI message with proper formatting
 function addMessage(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = chat-bubble ${className};
-    const sanitizedText = DOMPurify.sanitize(text); // Sanitize for safety
-    messageDiv.innerHTML = sanitizedText; // Render sanitized HTML
+
+    // Convert Markdown to HTML (parse Markdown using marked.js)
+    const formattedText = marked.parse(text);  // Use marked.js to parse Markdown into HTML
+
+    messageDiv.innerHTML = formattedText; // Render the parsed HTML
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Function to show AI response with code blocks and HTML tables
+// Function to show AI response with proper formatting
 async function showAIResponse(text, className) {
     const messageDiv = document.createElement("div");
     messageDiv.className = chat-bubble ${className};
     chatWindow.appendChild(messageDiv);
 
-    const parts = splitMessage(text);
+    // Convert Markdown to HTML (parse Markdown using marked.js)
+    const formattedText = marked.parse(text);  // Use marked.js to parse Markdown into HTML
 
-    for (const part of parts) {
-        if (part.type === "code") {
-            const codeBlock = document.createElement("pre");
-            codeBlock.className = "code-block";
-            const codeElement = document.createElement("code");
-            codeElement.textContent = part.content.trim();
-            codeBlock.appendChild(codeElement);
-            messageDiv.appendChild(codeBlock);
-        } else {
-            const sanitizedContent = DOMPurify.sanitize(part.content); // Sanitize HTML content
-            messageDiv.innerHTML += sanitizedContent;
-        }
-    }
-
+    messageDiv.innerHTML = formattedText; // Render the parsed HTML
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Typing effect for text display
+// Optional: Typing effect for text display (unchanged)
 async function typeText(text, container) {
     const span = document.createElement("span");
     container.appendChild(span);
@@ -91,27 +82,6 @@ async function typeText(text, container) {
         chatWindow.scrollTop = chatWindow.scrollHeight;
         await new Promise(resolve => setTimeout(resolve, 5)); // Fast typing effect
     }
-}
-
-// Split message into text, table, and code parts
-function splitMessage(text) {
-    const regex = /([\s\S]*?)/g;
-    let result, lastIndex = 0;
-    const parts = [];
-
-    while ((result = regex.exec(text)) !== null) {
-        if (result.index > lastIndex) {
-            parts.push({ type: "text", content: text.substring(lastIndex, result.index) });
-        }
-        parts.push({ type: "code", content: result[1] }); // Code block
-        lastIndex = regex.lastIndex;
-    }
-
-    if (lastIndex < text.length) {
-        parts.push({ type: "text", content: text.substring(lastIndex) });
-    }
-
-    return parts;
 }
 
 // Optional CSS Styling for better readability
