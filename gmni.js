@@ -85,12 +85,12 @@ function formatResponse(text) {
     text = text.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
 
     // Unordered List
-    text = text.replace(/^- (.+)$/gm, "<li>$1</li>");
-    text = text.replace(/(<li>.+<\/li>)/g, "<ul>$1</ul>");
+    text = text.replace(/^- (.+)$/gm, "<ul><li>$1</li></ul>");
+    text = text.replace(/(<ul><li>.+<\/li><\/ul>)+/g, match => `<ul>${match.replace(/<\/ul><ul>/g, '')}</ul>`);
 
     // Ordered List
-    text = text.replace(/^\d+\.\s(.+)$/gm, "<li>$1</li>");
-    text = text.replace(/(<li>.+<\/li>)/g, "<ol>$1</ol>");
+    text = text.replace(/^\d+\.\s(.+)$/gm, "<ol><li>$1</li></ol>");
+    text = text.replace(/(<ol><li>.+<\/li><\/ol>)+/g, match => `<ol>${match.replace(/<\/ol><ol>/g, '')}</ol>`);
 
     // Code Blocks
     text = text.replace(/```([\s\S]*?)```/g, `<pre class="code-block"><code>$1</code></pre>`);
@@ -100,9 +100,9 @@ function formatResponse(text) {
 
     // Tables
     text = text.replace(/\|(.+)\|\n(\|[-:]+\|\n)?([\s\S]*?)\n/g, function (match, header, divider, rows) {
-        let headers = header.split('|').map(h => h.trim());
+        let headers = header.split('|').map(h => `<th>${h.trim()}</th>`).join('');
         let bodyRows = rows.split('\n').map(row => `<tr>${row.split('|').map(cell => `<td>${cell.trim()}</td>`).join('')}</tr>`).join('');
-        return `<table class="custom-table"><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>${bodyRows}</table>`;
+        return `<table class="custom-table"><thead><tr>${headers}</tr></thead><tbody>${bodyRows}</tbody></table>`;
     });
 
     return text.replace(/\n/g, '<br>');
