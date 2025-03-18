@@ -19,8 +19,8 @@ async function sendMessage() {
 
     // API call to Google Gemini AI
     try {
-        const apiKey = "AIzaSyB2z-9qQW-ri59oMELf_bNrMcMRldadO84";
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey, {
+        const apiKey = "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";
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions" + apiKey, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
