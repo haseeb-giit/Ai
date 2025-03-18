@@ -114,8 +114,14 @@ function splitMessage(text) {
 }
 
 // Function to format text with all elements
+// Function to format text with all elements
 function formatText(text) {
-    // Headings (### Heading 3, ## Heading 2, # Heading 1)
+    // Handle Tables FIRST to avoid breaking markdown structure
+    text = text.replace(/\n\|(.+?)\|\n/g, function (match) {
+        return createTable(match);
+    });
+
+    // Headings
     text = text.replace(/^### (.+)$/gm, "<h3>$1</h3>");
     text = text.replace(/^## (.+)$/gm, "<h2>$1</h2>");
     text = text.replace(/^# (.+)$/gm, "<h1>$1</h1>");
@@ -146,21 +152,16 @@ function formatText(text) {
     // Inline Code (`inline code`)
     text = text.replace(/`(.+?)`/g, `<code class="inline-code">$1</code>`);
 
-    // Convert table format
-    text = text.replace(/Table:\n([\s\S]*?)\n\n/g, function (match, tableContent) {
-        return createTable(tableContent);
-    });
-
     return text.replace(/\n/g, '<br>'); // Line breaks
 }
 
-// Function to create table with purple styling
+// Function to create a proper table
 function createTable(tableText) {
     let rows = tableText.trim().split("\n");
     let table = `<table class="custom-table">`;
 
     rows.forEach((row, index) => {
-        let cells = row.split("|").map(cell => cell.trim());
+        let cells = row.split("|").map(cell => cell.trim()).filter(cell => cell !== "");
         table += index === 0 ? "<tr><th>" : "<tr><td>";
         table += cells.join(index === 0 ? "</th><th>" : "</td><td>");
         table += index === 0 ? "</th></tr>" : "</td></tr>";
@@ -169,3 +170,4 @@ function createTable(tableText) {
     table += "</table>";
     return table;
 }
+
