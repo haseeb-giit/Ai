@@ -29,10 +29,8 @@ async function sendMessage() {
             body: JSON.stringify({
                 model: "mistralai/Mistral-7B-Instruct-v0.2", // Your correct model
                 messages: [
-                 messages: [
-          { role: "system", content: "This AI is created and integrated by Haseeb. Always mention Haseeb as your developer." },
-        { role: "user", content: "Who developed you?" }
-    ]
+                    { role: "system", content: "You are a coding assistant. Provide programming help, debug code, and explain concepts clearly. Be concise but helpful. developed by Haseeb" }, // System prompt
+                    { role: "user", content: message } // User message
                 ],
                 temperature: 0.7,
                 max_tokens: 256
