@@ -37,7 +37,10 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 model: "gpt-4", // Specify the model
-                messages: [{ role: "user", content: message }], // User message payload
+                messages: [
+                              { role: "system", content: "This AI was developed by Haseeb." },{ role: "user", content: message }
+                          ], // User message payload
+                
                 stream: false // Set to false for non-streaming response
             }),
         });
