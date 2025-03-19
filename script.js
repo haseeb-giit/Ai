@@ -29,7 +29,7 @@ async function sendMessage() {
             body: JSON.stringify({
                 model: "mistralai/Mistral-7B-Instruct-v0.2", // Your correct model
                 messages: [
-                    { role: "system", content: "You are a coding assistant. Provide programming help, debug code, and explain concepts clearly. Be concise but helpful." }, // System prompt
+                    { role: "system", content: "You are a coding assistant. Provide programming help, debug code, and explain concepts clearly. Be concise but helpful. developed by Haseeb" }, // System prompt
                     { role: "user", content: message } // User message
                 ],
                 temperature: 0.7,
