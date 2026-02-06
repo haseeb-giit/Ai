@@ -990,14 +990,14 @@
                             "https://openrouter.ai/api/v1/chat/completions",
                             {
                                 method: "POST",
-                                headers: {
-                                    "Authorization": "Bearer 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",
+                                 headers: {
+                                    "Authorization": "Bearer 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",
                                     "Content-Type": "application/json",
                                     "HTTP-Referer": window.location.origin,
                                     "X-Title": "Simple AI Chatbot"
                                 },
                                 body: JSON.stringify({
-                                    model: "google/gemma-3n-e2b-it:free",
+                                    model: "arcee-ai/trinity-large-preview:free",
                                     messages: conversationHistory,
                                     max_tokens: 512,
                                     temperature: 0.7
@@ -1054,4 +1054,5 @@
         </body>
 
         </html>
+
 
