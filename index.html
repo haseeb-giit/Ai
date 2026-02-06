@@ -801,259 +801,212 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
             <script>
-                // Particles Animation
-                const particlesContainer = document.getElementById('particles');
-                for (let i = 0; i < 50; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.style.left = Math.random() * 100 + '%';
-                    particle.style.animationDelay = Math.random() * 10 + 's';
-                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                    particlesContainer.appendChild(particle);
-                }
+    // ------------------------
+    // Particles Animation
+    // ------------------------
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particlesContainer.appendChild(particle);
+    }
 
-                // Menu Toggle
-                const menuIcon = document.getElementById('menu-icon');
-                const navbar = document.querySelector('.navbar');
-                menuIcon.addEventListener('click', () => {
-                    navbar.classList.toggle('active');
-                });
+    // ------------------------
+    // Menu Toggle
+    // ------------------------
+    const menuIcon = document.getElementById('menu-icon');
+    const navbar = document.querySelector('.navbar');
+    menuIcon.addEventListener('click', () => {
+        navbar.classList.toggle('active');
+    });
 
-                // Configure Marked.js for better rendering
-                marked.setOptions({
-                    highlight: function(code, lang) {
-                        if (lang && hljs.getLanguage(lang)) {
-                            return hljs.highlight(code, { language: lang }).value;
-                        }
-                        return hljs.highlightAuto(code).value;
-                    },
-                    breaks: true,
-                    gfm: true
-                });
+    // ------------------------
+    // Configure Marked.js
+    // ------------------------
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                return hljs.highlight(code, { language: lang }).value;
+            }
+            return hljs.highlightAuto(code).value;
+        },
+        breaks: true,
+        gfm: true
+    });
 
-                const chatBox = document.getElementById('chat-box');
-                const welcome = document.getElementById('welcome');
-                const typingIndicator = document.getElementById('typing');
-                const userInput = document.getElementById('user-input');
-                const sendBtn = document.getElementById('send-btn');
+    const chatBox = document.getElementById('chat-box');
+    const welcome = document.getElementById('welcome');
+    const typingIndicator = document.getElementById('typing');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
 
-                let conversationHistory = [];
+    let conversationHistory = [];
 
-                // Auto-resize textarea
-                userInput.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = (this.scrollHeight) + 'px';
-                });
+    // Auto-resize textarea
+    userInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
 
-                function hideWelcome() {
-                    if (welcome) {
-                        welcome.style.display = 'none';
-                    }
-                }
+    function hideWelcome() {
+        if (welcome) welcome.style.display = 'none';
+    }
 
-                function addMessage(content, isUser) {
-                    hideWelcome();
-                    
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-                    
-                    const avatar = document.createElement('div');
-                    avatar.className = `message-avatar ${isUser ? 'user-avatar' : 'bot-avatar'}`;
-                    avatar.innerHTML = isUser ? '<i class="bx bx-user"></i>' : '<i class="bx bx-bot"></i>';
-                    
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'message-content';
-                    
-                    if (isUser) {
-                        contentDiv.textContent = content;
-                    } else {
-                        // For bot messages, we'll add content with typing effect
-                        contentDiv.innerHTML = '<span class="typing-cursor"></span>';
-                    }
-                    
-                    messageDiv.appendChild(avatar);
-                    messageDiv.appendChild(contentDiv);
-                    chatBox.appendChild(messageDiv);
+    function addMessage(content, isUser) {
+        hideWelcome();
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = `message-avatar ${isUser ? 'user-avatar' : 'bot-avatar'}`;
+        avatar.innerHTML = isUser ? '<i class="bx bx-user"></i>' : '<i class="bx bx-bot"></i>';
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        if (isUser) contentDiv.textContent = content;
+        else contentDiv.innerHTML = '<span class="typing-cursor"></span>';
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(contentDiv);
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        return contentDiv;
+    }
+
+    async function typeMessage(element, htmlContent) {
+        element.innerHTML = '';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        await processNodes(element, tempDiv.childNodes);
+        element.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function processNodes(targetElement, nodes, delay = 5) {
+        for (let node of nodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent;
+                const textNode = document.createTextNode('');
+                targetElement.appendChild(textNode);
+                for (let char of text) {
+                    textNode.textContent += char;
                     chatBox.scrollTop = chatBox.scrollHeight;
-                    
-                    return contentDiv;
+                    await new Promise(r => setTimeout(r, delay));
                 }
-
-                async function typeMessage(element, htmlContent) {
-                    // Remove typing cursor
-                    element.innerHTML = '';
-                    
-                    // Create a temporary div to parse HTML
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = htmlContent;
-                    
-                    // Process and add content with typing effect
-                    await processNodes(element, tempDiv.childNodes);
-                    
-                    // Highlight code blocks after typing is complete
-                    element.querySelectorAll('pre code').forEach((block) => {
-                        hljs.highlightElement(block);
-                    });
-                    
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node.cloneNode(false);
+                targetElement.appendChild(element);
+                if (node.tagName === 'PRE' || node.tagName === 'TABLE') {
+                    element.innerHTML = node.innerHTML;
+                    if (node.tagName === 'PRE') addCopyButton(element);
                     chatBox.scrollTop = chatBox.scrollHeight;
+                    await new Promise(r => setTimeout(r, 50));
+                } else {
+                    await processNodes(element, node.childNodes, delay);
                 }
+            }
+        }
+    }
 
-                async function processNodes(targetElement, nodes, delay = 5) {
-                    for (let node of nodes) {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            // Type text character by character
-                            const text = node.textContent;
-                            const textNode = document.createTextNode('');
-                            targetElement.appendChild(textNode);
-                            
-                            for (let char of text) {
-                                textNode.textContent += char;
-                                chatBox.scrollTop = chatBox.scrollHeight;
-                                await new Promise(resolve => setTimeout(resolve, delay));
-                            }
-                        } else if (node.nodeType === Node.ELEMENT_NODE) {
-                            const element = node.cloneNode(false);
-                            targetElement.appendChild(element);
-                            
-                            // For code blocks, add them instantly for better UX
-                            if (node.tagName === 'PRE' || node.tagName === 'TABLE') {
-                                element.innerHTML = node.innerHTML;
-                                
-                                // Add copy button to code blocks
-                                if (node.tagName === 'PRE') {
-                                    addCopyButton(element);
-                                }
-                                
-                                chatBox.scrollTop = chatBox.scrollHeight;
-                                await new Promise(resolve => setTimeout(resolve, 50));
-                            } else {
-                                await processNodes(element, node.childNodes, delay);
-                            }
-                        }
-                    }
-                }
+    function addCopyButton(preElement) {
+        const codeElement = preElement.querySelector('code');
+        if (!codeElement) return;
 
-                function addCopyButton(preElement) {
-                    const codeElement = preElement.querySelector('code');
-                    if (!codeElement) return;
-                    
-                    const language = codeElement.className.match(/language-(\w+)/)?.[1] || 'code';
-                    
-                    const header = document.createElement('div');
-                    header.className = 'code-header';
-                    
-                    const langLabel = document.createElement('span');
-                    langLabel.className = 'code-lang';
-                    langLabel.textContent = language;
-                    
-                    const copyBtn = document.createElement('button');
-                    copyBtn.className = 'copy-btn';
-                    copyBtn.innerHTML = '<i class="bx bx-copy"></i> Copy';
-                    
-                    copyBtn.addEventListener('click', async () => {
-                        const code = codeElement.textContent;
-                        await navigator.clipboard.writeText(code);
-                        copyBtn.innerHTML = '<i class="bx bx-check"></i> Copied!';
-                        copyBtn.classList.add('copied');
-                        setTimeout(() => {
-                            copyBtn.innerHTML = '<i class="bx bx-copy"></i> Copy';
-                            copyBtn.classList.remove('copied');
-                        }, 2000);
-                    });
-                    
-                    header.appendChild(langLabel);
-                    header.appendChild(copyBtn);
-                    preElement.insertBefore(header, preElement.firstChild);
-                }
+        const language = codeElement.className.match(/language-(\w+)/)?.[1] || 'code';
 
-                async function sendMessage() {
-                    const message = userInput.value.trim();
-                    if (!message) return;
+        const header = document.createElement('div');
+        header.className = 'code-header';
 
-                    // Disable input and button
-                    userInput.disabled = true;
-                    sendBtn.disabled = true;
+        const langLabel = document.createElement('span');
+        langLabel.className = 'code-lang';
+        langLabel.textContent = language;
 
-                    // Add user message
-                    addMessage(message, true);
-                    conversationHistory.push({ role: 'user', content: message });
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.innerHTML = '<i class="bx bx-copy"></i> Copy';
+        copyBtn.addEventListener('click', async () => {
+            await navigator.clipboard.writeText(codeElement.textContent);
+            copyBtn.innerHTML = '<i class="bx bx-check"></i> Copied!';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="bx bx-copy"></i> Copy';
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        });
 
-                    // Clear input
-                    userInput.value = '';
-                    userInput.style.height = 'auto';
+        header.appendChild(langLabel);
+        header.appendChild(copyBtn);
+        preElement.insertBefore(header, preElement.firstChild);
+    }
 
-                    // Show typing indicator
-                    typingIndicator.classList.add('active');
+    // ------------------------
+    // SEND MESSAGE FUNCTION
+    // ------------------------
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
 
-                    try {
-                        const response = await fetch(
-                            "https://openrouter.ai/api/v1/chat/completions",
-                            {
-                                method: "POST",
-                                 headers: {
-                                    "Authorization": "Bearer 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",
-                                    "Content-Type": "application/json",
-                                    "HTTP-Referer": window.location.origin,
-                                    "X-Title": "Simple AI Chatbot"
-                                },
-                                body: JSON.stringify({
-                                    model: "arcee-ai/trinity-large-preview:free",
-                                    messages: conversationHistory,
-                                    max_tokens: 512,
-                                    temperature: 0.7
-                                })
-                            }
-                        );
+        userInput.disabled = true;
+        sendBtn.disabled = true;
 
-                        const data = await response.json();
+        addMessage(message, true);
+        conversationHistory.push({ role: 'user', content: message });
 
-                        // Hide typing indicator
-                        typingIndicator.classList.remove('active');
+        userInput.value = '';
+        userInput.style.height = 'auto';
+        typingIndicator.classList.add('active');
 
-                        if (!response.ok) {
-                            console.error(data);
-                            const errorContent = addMessage('', false);
-                            errorContent.innerHTML = '<p style="color: #ef4444;">❌ Sorry, there was an error processing your request. Please try again.</p>';
-                            return;
-                        }
+        try {
+            // ⚡ PROXY CALL to Cloudflare Worker (no key in frontend)
+            const response = await fetch("https://solitary-moon-1f25.haseeb-giit.workers.dev/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "arcee-ai/trinity-large-preview:free",
+                    messages: conversationHistory,
+                    max_tokens: 512,
+                    temperature: 0.7
+                })
+            });
 
-                        const reply = data?.choices?.[0]?.message?.content || "No response received.";
-                        
-                        // Add to conversation history
-                        conversationHistory.push({ role: 'assistant', content: reply });
+            const data = await response.json();
+            typingIndicator.classList.remove('active');
 
-                        // Parse markdown and render with typing effect
-                        const htmlContent = marked.parse(reply);
-                        const botContent = addMessage('', false);
-                        await typeMessage(botContent, htmlContent);
+            const reply = data?.choices?.[0]?.message?.content || "No response received.";
+            conversationHistory.push({ role: 'assistant', content: reply });
 
-                    } catch (error) {
-                        typingIndicator.classList.remove('active');
-                        const errorContent = addMessage('', false);
-                        errorContent.innerHTML = '<p style="color: #ef4444;">❌ Network error. Please check your connection and try again.</p>';
-                        console.error('Error:', error);
-                    } finally {
-                        // Re-enable input and button
-                        userInput.disabled = false;
-                        sendBtn.disabled = false;
-                        userInput.focus();
-                    }
-                }
+            const htmlContent = marked.parse(reply);
+            const botContent = addMessage('', false);
+            await typeMessage(botContent, htmlContent);
 
-                function useSuggestion(text) {
-                    userInput.value = text;
-                    userInput.focus();
-                    sendMessage();
-                }
+        } catch (error) {
+            typingIndicator.classList.remove('active');
+            const errorContent = addMessage('', false);
+            errorContent.innerHTML = '<p style="color: #ef4444;">❌ Network error. Please try again.</p>';
+            console.error(error);
+        } finally {
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+    }
 
-                // Focus input on load
-                window.addEventListener('load', () => {
-                    userInput.focus();
-                });
-            </script>
+    function useSuggestion(text) {
+        userInput.value = text;
+        userInput.focus();
+        sendMessage();
+    }
+
+    window.addEventListener('load', () => {
+        userInput.focus();
+    });
+</script>
+
         </body>
 
         </html>
-
-
-
